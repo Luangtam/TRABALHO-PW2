@@ -45,6 +45,7 @@ def login():
 from controllers.produtos_controller import  *
 from controllers.servicos_controller import *
 from controllers.users_controller import  *
+from controllers.sales_controller import *
 
 
 if __name__ == '__main__':
