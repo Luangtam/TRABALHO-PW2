@@ -50,4 +50,23 @@ from controllers.sales_controller import *
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
+
+    """Popula o banco de dados com dados iniciais"""
+    db  = SessionLocal();
+    
+    # Limpa os dados existentes (opcional)
+    #db.session.drop_all()
+    #db.create_all()
+    
+    # Cria usuários de exemplo
+    users = [
+        User(nome='mentrixmax@gmail.com', login='mentrixmax@example.com' , password="123"),
+    ]
+    
+    
+    # Adiciona todos ao banco de dados
+   # db.add_all(users)
+    db.commit()
+
+
     app.run(debug=True, host='0.0.0.0', port=5001)

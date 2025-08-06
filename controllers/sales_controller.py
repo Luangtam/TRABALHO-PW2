@@ -4,6 +4,8 @@ from sqlalchemy.orm import sessionmaker
 from flask_login import login_required
 from models.Conexao import engine
 from models.vendas_model import Venda  
+from models.produto_model import Produto
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 @app.route('/vendas', methods=['GET'])
@@ -24,7 +26,22 @@ def vendas_search():
 @app.route('/vendas/novo', methods=['GET'])
 @login_required
 def venda_novo():
-    return render_template("editarvendas.html", venda=Venda(cliente_nome="", total=0))
+    db = SessionLocal()
+    produtos = db.query(Produto).all()
+    return render_template("editarvendas.html", venda=Venda(cliente_nome="", total=0), produtos=produtos)
+
+
+@app.route('/vendas/produto/<int:id>', methods=['GET'])
+@login_required
+def produto_preco(id):
+    db = SessionLocal()
+    produtos = db.query(Produto).get(id)
+    if produtos != None:
+        preco_formatado = f"{produtos.preco:,.2f}"
+        return preco_formatado
+    return ""
+
+
 
 @app.route('/vendas/editar/<int:id>', methods=['GET'])
 @login_required
@@ -49,10 +66,12 @@ def venda_save():
     id = request.form['id']
     cliente_nome = request.form['clienteNome']
     total = request.form['total']
-    total = total.replace(".", "").replace(",", ".")
+    total = total.replace(",", ".")
+    print(total)
+    idProduto = request.form['idProduto']
     
     if id == "":
-        venda = Venda(cliente_nome=cliente_nome, total=total)
+        venda = Venda(cliente_nome=cliente_nome, total=total, idProduto=idProduto)
         db.add(venda)
         db.commit()
     else:
